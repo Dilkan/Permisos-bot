@@ -12,8 +12,8 @@ driver = webdriver.Chrome()
 driver.get("http://gesdepor.dipusevilla.es/login")
 
 # Ingresar el nombre de usuario y la contraseña
-usuario = "dylanuga@gmail.com"
-contraseña = "1contra20MCS?"
+usuario = "xxxxx"
+contraseña = "xxxxx"
 
 # Encontrar el elemento <input type="text" class="form-control input-lg ng-pristine ng-valid" placeholder="Login o email" ng-model="login" autofocus="">
 wait = WebDriverWait(driver, 10)
