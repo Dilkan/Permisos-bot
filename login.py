@@ -33,29 +33,33 @@ entrar_button = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "spa
 entrar_button.click()
 
 # Navegar a la página de reserva pasado 1 segundo
-reserva_url = "http://gesdepor.dipusevilla.es/timetable/11694#date=2023-02-02&g=286371"
+reserva_url = "http://gesdepor.dipusevilla.es/timetable/11694#date=2023-02-09&g=286371"
 sleep(0.5)
 driver.get(reserva_url)
 
 
 # Esperar a que el elemento <div class="piece FREE" style="height:60px" ng-repeat="piece in field.pieces[date]" ng-click="goOperate(field, piece)"> esté disponible
-# si no esta disponible en 2 segundos, actualizar la página y volver a intentar. Pulsar 0 para salir del script. Si esta disponible, hacer clic en el elemento
+# si no esta disponible en 2 segundos, actualizar la página y volver a intentar. Si esta disponible, hacer clic en el elemento
 wait = WebDriverWait(driver, 1)
+refresh_count = 0
 while True:
     try:
         reservation_div = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.piece.FREE[ng-repeat='piece in field.pieces[date]'][ng-click='goOperate(field, piece)']")))
         reservation_div.click()
+        print("Elemento encontrado")
         break
     except TimeoutException:
+        refresh_count += 1
+        if refresh_count >= 5:
+            driver.close()
+            print("Elemento no encontrado después de 5 actualizaciones. Cerrando navegador y deteniendo script.")
+            exit()
         driver.refresh()
-
-# Hacer clic en el elemento
-reservation_div.click()
 
 # Buscar el boton alquilar y si no lo encuentra cerrar el navegador y dejar un mensaje en la consola y cerrar el script
 try:
 # El boton es <a ng-href="/user/booking&amp;f=8755&amp;d=2023-02-02&amp;t1=20:00&amp;t2=21:00" class="btn btn-primary form-control" ng-show="ImUser" href="/user/booking&amp;f=8755&amp;d=2023-02-02&amp;t1=20:00&amp;t2=21:00"><span class="btn-addon glyphicon glyphicon-calendar"></span>&nbsp;Alquilar</a>
-    alquilar_button = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "a[ng-href='/user/booking&f=8755&d=2023-02-02&t1=20:00&t2=21:00'][ng-show='ImUser']")))
+    alquilar_button = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "a[ng-href='/user/booking&f=8755&d=[0-9]{4}-[0-1][0-9]-[0-3][0-9]&t1=20:00&t2=21:00'][ng-show='ImUser']")))
     alquilar_button.click()
 except:
     driver.quit()
@@ -63,14 +67,10 @@ except:
     exit()
 
 
-# Esperar 20 segundos a cerrar el navegador
+# Esperar 5 segundos a cerrar el navegador
 sleep(5)
-
-# Copiar la url de la página actual a un archivo de texto
-with open("url.txt", "w") as f:
-    f.write(driver.current_url)
 
 # Salir del navegador
 driver.quit()
-
+# Salir del script
 exit()
